@@ -1,0 +1,28 @@
+find_package(Python3 QUIET COMPONENTS Interpreter)
+
+if(Python3_FOUND)
+  add_custom_target(
+    CreateStarCatalog
+    COMMAND Python3::Interpreter
+    ${CMAKE_CURRENT_SOURCE_DIR}/sky/CreateStarCatalog.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/sky/StarCatalog.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/sky/StarCatalog.cpp
+  )
+endif()
+
+add_library(taal)
+
+target_sources(taal
+  PRIVATE
+  sky/StarCatalog.cpp
+)
+
+set(TAAL_PUBLIC_HEADERS
+  sky/StarCatalog.h
+)
+
+set_target_properties(
+  taal
+  PROPERTIES
+  PUBLIC_HEADER "${TAAL_PUBLIC_HEADERS}"
+)
