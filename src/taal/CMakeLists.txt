@@ -15,10 +15,12 @@ add_library(taal)
 target_sources(taal
   PRIVATE
   sky/StarCatalog.cpp
+  sky/StarField.cpp
 )
 
 set(TAAL_PUBLIC_HEADERS
   sky/StarCatalog.h
+  sky/StarField.h
 )
 
 set_target_properties(
@@ -26,3 +28,6 @@ set_target_properties(
   PROPERTIES
   PUBLIC_HEADER "${TAAL_PUBLIC_HEADERS}"
 )
+
+target_link_libraries(taal PUBLIC vsg::vsg)
+target_include_directories(taal PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
