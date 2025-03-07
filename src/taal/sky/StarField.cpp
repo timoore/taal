@@ -25,15 +25,113 @@ SOFTWARE.
 #include "StarField.h"
 
 #include "taal/sky/StarCatalog.h"
+#include "taal/shading/shaderDefs.h"
 #include "taal/util/math.h"
 
+#include <vsg/app/RecordTraversal.h>
 #include <vsg/core/Array.h>
+#include <vsg/io/read.h>
+#include <vsg/nodes/StateGroup.h>
+#include <vsg/nodes/VertexDraw.h>
+#include <vsg/state/ColorBlendState.h>
+#include <vsg/state/InputAssemblyState.h>
+#include <vsg/state/RasterizationState.h>
+#include <vsg/utils/GraphicsPipelineConfigurator.h>
+#include <vsg/utils/ShaderSet.h>
 
 namespace taal
 {
-    StarField::StarField()
+    namespace
+    {
+        vsg::ref_ptr<vsg::ShaderSet> makeShaderSet(const vsg::ref_ptr<vsg::Options>& options)
+        {
+            auto vertexShader = vsg::read_cast<vsg::ShaderStage>("shaders/stars.vert", options);
+            auto fragmentShader = vsg::read_cast<vsg::ShaderStage>("shaders/stars.frag", options);
+
+            if (!vertexShader || !fragmentShader)
+            {
+                vsg::fatal("makeShaderSet(...) could not find shaders.");
+                return {};
+            }
+
+            auto result = vsg::ShaderSet::create(vsg::ShaderStages{vertexShader, fragmentShader});
+            result->addAttributeBinding("taal_starData", "", 0,
+                                        VK_FORMAT_R32G32B32A32_SFLOAT, vsg::vec4Array::create(1));
+            result->addDescriptorBinding("lightData", "", shading::VIEW_DESCRIPTOR_SET, 0,
+                                         VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, {});
+            result->addDescriptorBinding("viewData", "", shading::VIEW_DESCRIPTOR_SET, 1,
+                                         VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 ,VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, {});
+            result->addPushConstantRange("pc", "", VK_SHADER_STAGE_VERTEX_BIT, 0, 128);
+            result->customDescriptorSetBindings.push_back(vsg::ViewDependentStateBinding::create(shading::VIEW_DESCRIPTOR_SET));
+            return result;
+        }
+
+        struct SetPipelineStates : public vsg::Visitor
+        {
+            VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+            bool blending = false;
+            bool two_sided = false;
+            bool depthClamp = false;
+
+            SetPipelineStates(VkPrimitiveTopology in_topology, bool in_blending, bool in_two_sided,
+                              bool in_depth_clamp)
+                : topology(in_topology), blending(in_blending), two_sided(in_two_sided),
+                  depthClamp(in_depth_clamp)
+            {
+            }
+            void apply(vsg::Object& object) override
+            {
+                object.traverse(*this);
+            }
+            void apply(vsg::RasterizationState& rs) override
+            {
+                if (two_sided)
+                {
+                    rs.cullMode = VK_CULL_MODE_NONE;
+                }
+                if (depthClamp)
+                {
+                    rs.depthClampEnable = VK_TRUE;
+                }
+            }
+            void apply(vsg::InputAssemblyState& ias) override
+            {
+                ias.topology = topology;
+            }
+            void apply(vsg::ColorBlendState& cbs) override
+            {
+                cbs.configureAttachments(blending);
+            }
+        };
+    }
+
+    StarField::StarField(const vsg::ref_ptr<vsg::Options>& options)
     {
         auto starArray = vsg::vec4Array::create(StarCatalog::catalog.size());
-        
+        for (unsigned i = 0; i < StarCatalog::catalog.size(); ++i)
+        {
+            const auto& entry = StarCatalog::catalog[i];
+            // negative rotation around Y axis
+            auto [sd, cd] = sincos(-entry.declination);
+            // postitive rotation aroun Z axis
+            auto [sra, cra] = sincos(entry.rightAscensionRad);
+            (*starArray)[i] = vsg::vec4(cra * cd, sra * cd, sd, entry.magnitude);
+        }
+        auto starShaderSet = makeShaderSet(options);
+        auto pipelineConf = vsg::GraphicsPipelineConfigurator::create(starShaderSet);
+        SetPipelineStates sps(VK_PRIMITIVE_TOPOLOGY_POINT_LIST, false, false, false);
+        pipelineConf->accept(sps);
+        vsg::DataList vertexArrays;
+        pipelineConf->assignArray(vertexArrays, "taal_starData", VK_VERTEX_INPUT_RATE_VERTEX, starArray);
+        auto vd = vsg::VertexDraw::create();
+        vd->assignArrays(vertexArrays);
+        vd->vertexCount = starArray->size();
+        vd->instanceCount = 1;
+        pipelineConf->init();
+        auto stateGroup = vsg::StateGroup::create();
+        stateGroup->add(pipelineConf->bindGraphicsPipeline);
+        stateGroup->addChild(vd);
+        addChild(stateGroup);
     }
+
 }

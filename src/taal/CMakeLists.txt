@@ -19,8 +19,10 @@ target_sources(taal
 )
 
 set(TAAL_PUBLIC_HEADERS
+  shading/shaderDefs.h
   sky/StarCatalog.h
   sky/StarField.h
+  util/math.h
 )
 
 set_target_properties(

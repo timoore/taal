@@ -24,14 +24,15 @@ SOFTWARE.
 
 #pragma once
 
-#include <vsg/io/FileSystem.h>
-#include <vsg/nodes/Group.h>
+// Definitions for values and structures used by shaders. It may not
+// be tractable to keep all of taal's shaders' definitions in one
+// header file, but these are common ones.
 
-namespace taal
+namespace taal::shading
 {
-    class StarField : public vsg::Inherit<vsg::Group, StarField>
+    enum DescriptorSetUse
     {
-    public:
-        explicit StarField(const vsg::ref_ptr<vsg::Options>& options);
+        // VSG's lighting and camera data
+        VIEW_DESCRIPTOR_SET = 0
     };
 }
