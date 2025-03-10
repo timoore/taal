@@ -28,7 +28,7 @@ out gl_PerVertex{ vec4 gl_Position; float gl_PointSize; };
 void main()
 {
     vec4 starDirection = vec4(taal_starData.xyz, 0.0);
-    vec4 starProjection = (pc.projection * pc.modelView) * starProjection;
+    vec4 starProjection = (pc.projection * pc.modelView) * starDirection;
     starProjection.z = 0.0;
     gl_Position = starProjection;
     float magnitude = taal_starData.w;

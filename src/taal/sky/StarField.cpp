@@ -38,6 +38,7 @@ SOFTWARE.
 #include <vsg/state/RasterizationState.h>
 #include <vsg/utils/GraphicsPipelineConfigurator.h>
 #include <vsg/utils/ShaderSet.h>
+#include <vulkan/vulkan_core.h>
 
 namespace taal
 {
@@ -101,6 +102,10 @@ namespace taal
             void apply(vsg::ColorBlendState& cbs) override
             {
                 cbs.configureAttachments(blending);
+            }
+            void apply(vsg::DepthStencilState& dss) override
+            {
+                dss.depthCompareOp = VK_COMPARE_OP_GREATER_OR_EQUAL;
             }
         };
     }

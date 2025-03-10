@@ -30,5 +30,7 @@ if(TAAL_TESTS_ENABLED)
   find_package(vsgImGui)
 endif()
 
-add_subdirectory(src/taal)
+include(GNUInstallDirs)
 
+add_subdirectory(src/taal)
+add_subdirectory(src/examples)
