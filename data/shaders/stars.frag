@@ -7,5 +7,10 @@ layout(location = 0) out vec4 outColor;
 
 void main()
 {
-    outColor = starColor;
+    float magnitude = starColor.w;
+    float radius = length(gl_PointCoord - vec2(.5, .5));
+    // Make mag 6.0 be barely visible.
+    float irradiance = pow(2.512, 6.0 - magnitude) * 0.0625;
+    float value = irradiance * exp(-radius * radius);
+    outColor = vec4(value * starColor.xyz, 1.0);
 }

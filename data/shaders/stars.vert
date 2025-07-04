@@ -32,14 +32,6 @@ void main()
     starProjection.z = 0.0;
     gl_Position = starProjection;
     float magnitude = taal_starData.w;
-    if (magnitude < 4.0)
-    {
-        gl_PointSize = max((8.0 - magnitude) / 2.0, 1.0);
-        starColor = vec4(1.0, 1.0, 1.0, 1.0);
-    }
-    else
-    {
-        gl_PointSize = 1.0;
-        starColor = vec4(1.0, 1.0, 1.0, 1.0) * smoothstep(-6.1, -4.0, -magnitude);
-    }
+    gl_PointSize = 4.0;
+    starColor = vec4(1.0, 1.0, 1.0, magnitude);
 }
