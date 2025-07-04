@@ -234,7 +234,6 @@ int main(int argc, char** argv)
         }
 
         auto vsg_scene = vsg::Group::create();
-        vsg_scene->addChild(starNode);
         vsg_scene->addChild(modelGroup);
 
         // create the viewer and assign window(s) to it
