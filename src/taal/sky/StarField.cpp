@@ -119,9 +119,7 @@ namespace taal
         for (unsigned i = 0; i < StarCatalog::catalog.size(); ++i)
         {
             const auto& entry = StarCatalog::catalog[i];
-            // negative rotation around Y axis
-            auto [sd, cd] = sincos(-entry.declination);
-            // postitive rotation aroun Z axis
+            auto [sd, cd] = sincos(entry.declination);
             auto [sra, cra] = sincos(entry.rightAscensionRad);
             (*starArray)[i] = vsg::vec4(cra * cd, sra * cd, sd, entry.magnitude);
             (*colorArray)[i] = vsg::vec3(1.0, 1.0, 1.0);
