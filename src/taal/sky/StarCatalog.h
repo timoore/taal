@@ -26,6 +26,7 @@ SOFTWARE.
 #include <cstdint>
 #include <map>
 #include <vector>
+#include <string>
 
 namespace taal
 {
@@ -39,7 +40,15 @@ namespace taal
             float declination;
             float magnitude;
         };
+
+        struct AuxEntry
+        {
+            std::string bayerName;
+            int flamsteedName;
+            std::string constellation;
+            std::string comment;
+        };
         static const std::vector<Entry> catalog;
-        static const std::map<uint32_t, const char*> names;
+        static const std::map<uint32_t, const AuxEntry> auxData;
     };
 }

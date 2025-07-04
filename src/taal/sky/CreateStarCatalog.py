@@ -57,13 +57,19 @@ with open(destFile, 'w') as cppFp:
     print("};", file=cppFp)
     first = True
     print("", file=cppFp)
-    print("    const std::map<uint32_t, const char*> StarCatalog::names = {", file=cppFp)
+    print("    const std::map<uint32_t, const StarCatalog::AuxEntry> StarCatalog::auxData = {", file=cppFp)
     for entry in starJson:
-        if 'hr' in entry and 'name' in entry:
+        if 'hr' in entry and ('name' in entry or 'bayer' in entry or 'flamsteed' in entry or 'constellation' in entry):
             if not first:
                 print(",", file=cppFp)
             first = False
-            cname = entry['name'].replace('"', '\\"')
-            print("        {{{}, \"{}\"}}".format(entry['hr'], cname), file=cppFp, end="")
+            bayerName = entry.get('bayer', "")
+            flamsteedName = entry.get('flamsteed', -1)
+            constellation = entry.get('constellation', "")
+            comment = entry.get('comment', "")
+            comment = comment.replace('"', '\\"')
+            print("        {{{}, {{\"{}\", {}, \"{}\", \"{}\"}}}}".format(entry['hr'],
+                                                      bayerName, flamsteedName, constellation, comment),
+                  file=cppFp, end="")
     print("};", file=cppFp)
     print("}", file=cppFp)
