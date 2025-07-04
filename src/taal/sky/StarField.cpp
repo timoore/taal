@@ -58,6 +58,8 @@ namespace taal
             auto result = vsg::ShaderSet::create(vsg::ShaderStages{vertexShader, fragmentShader});
             result->addAttributeBinding("taal_starData", "", 0,
                                         VK_FORMAT_R32G32B32A32_SFLOAT, vsg::vec4Array::create(1));
+            result->addAttributeBinding("taal_starColor", "", 1,
+                                        VK_FORMAT_R32G32B32_SFLOAT, vsg::vec3Array::create(1));
             result->addDescriptorBinding("lightData", "", shading::VIEW_DESCRIPTOR_SET, 0,
                                          VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, {});
             result->addDescriptorBinding("viewData", "", shading::VIEW_DESCRIPTOR_SET, 1,
@@ -113,6 +115,7 @@ namespace taal
     StarField::StarField(const vsg::ref_ptr<vsg::Options>& options)
     {
         auto starArray = vsg::vec4Array::create(StarCatalog::catalog.size());
+        auto colorArray = vsg::vec3Array::create(StarCatalog::catalog.size());
         for (unsigned i = 0; i < StarCatalog::catalog.size(); ++i)
         {
             const auto& entry = StarCatalog::catalog[i];
@@ -121,6 +124,18 @@ namespace taal
             // postitive rotation aroun Z axis
             auto [sra, cra] = sincos(entry.rightAscensionRad);
             (*starArray)[i] = vsg::vec4(cra * cd, sra * cd, sd, entry.magnitude);
+            (*colorArray)[i] = vsg::vec3(1.0, 1.0, 1.0);
+#if 0
+            // Debugging; highlight Ursa Major
+            auto auxEntry = StarCatalog::auxData.find(entry.hr);
+            if (auxEntry != StarCatalog::auxData.end())
+            {
+                if (auxEntry->second.constellation.compare("UMa") == 0)
+                {
+                    (*colorArray)[i] = vsg::vec3(1.0, 0.0, 0.0);
+                }
+            }
+#endif
         }
         auto starShaderSet = makeShaderSet(options);
         auto pipelineConf = vsg::GraphicsPipelineConfigurator::create(starShaderSet);
@@ -128,6 +143,7 @@ namespace taal
         pipelineConf->accept(sps);
         vsg::DataList vertexArrays;
         pipelineConf->assignArray(vertexArrays, "taal_starData", VK_VERTEX_INPUT_RATE_VERTEX, starArray);
+        pipelineConf->assignArray(vertexArrays, "taal_starColor", VK_VERTEX_INPUT_RATE_VERTEX, colorArray);
         auto vd = vsg::VertexDraw::create();
         vd->assignArrays(vertexArrays);
         vd->vertexCount = starArray->size();

@@ -10,6 +10,7 @@ layout(push_constant) uniform PushConstants {
 
 
 layout(location = 0) in vec4 taal_starData;
+layout(location = 1) in vec3 taal_starColor;
 
 layout(location = 0) out vec4 starColor;
 
@@ -33,5 +34,5 @@ void main()
     gl_Position = starProjection;
     float magnitude = taal_starData.w;
     gl_PointSize = 4.0;
-    starColor = vec4(1.0, 1.0, 1.0, magnitude);
+    starColor = vec4(taal_starColor, magnitude);
 }
