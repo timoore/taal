@@ -121,10 +121,10 @@ int main(int argc, char** argv)
         // The physical device needs to be checked, of course
 
         auto deviceFeatures = windowTraits->deviceFeatures = vsg::DeviceFeatures::create();
+        deviceFeatures->get().samplerAnisotropy = VK_TRUE;
         if (depthClamp)
         {
             std::cout << "Enabled depth clamp." << std::endl;
-            deviceFeatures->get().samplerAnisotropy = VK_TRUE;
             deviceFeatures->get().depthClamp = VK_TRUE;
         }
 
