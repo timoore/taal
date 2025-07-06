@@ -16,6 +16,7 @@ target_sources(taal
   PRIVATE
   sky/StarCatalog.cpp
   sky/StarField.cpp
+  util/Component.cpp
   util/DeviceProperties.cpp
 )
 
@@ -23,6 +24,7 @@ set(TAAL_PUBLIC_HEADERS
   shading/shaderDefs.h
   sky/StarCatalog.h
   sky/StarField.h
+  util/Component.h
   util/DeviceProperties.h
   util/math.h
 )

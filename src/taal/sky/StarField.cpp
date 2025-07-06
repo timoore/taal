@@ -112,7 +112,7 @@ namespace taal
         };
     }
 
-    StarField::StarField(const vsg::ref_ptr<vsg::Options>& options)
+    StarFieldGroup::StarFieldGroup(const vsg::ref_ptr<vsg::Options>& options)
     {
         auto starArray = vsg::vec4Array::create(StarCatalog::catalog.size());
         auto colorArray = vsg::vec3Array::create(StarCatalog::catalog.size());
@@ -153,4 +153,19 @@ namespace taal
         addChild(stateGroup);
     }
 
+    void StarField::addDeviceFeatures(
+        const vsg::ref_ptr<vsg::PhysicalDevice> &physDevice,
+        const vsg::ref_ptr<vsg::DeviceFeatures> &deviceFeatures)
+    {
+        const auto &physFeatures = physDevice->getFeatures();
+        if (physFeatures.largePoints)
+        {
+            deviceFeatures->get().largePoints = 1;
+        }
+    }
+
+    vsg::ref_ptr<StarFieldGroup> StarField::createGroup(const vsg::ref_ptr<vsg::Options>& options)
+    {
+        return StarFieldGroup::create(options);
+    }
 }

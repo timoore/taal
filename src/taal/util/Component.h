@@ -24,25 +24,40 @@ SOFTWARE.
 
 #pragma once
 
-#include <taal/util/Component.h>
+#include <vsg/app/Window.h>
+#include <vsg/core/Inherit.h>
+#include <vsg/core/Object.h>
+#include <vsg/vk/DeviceFeatures.h>
+#include <vsg/vk/PhysicalDevice.h>
 
-#include <vsg/io/FileSystem.h>
-#include <vsg/nodes/Group.h>
+#include <vector>
 
 namespace taal
 {
-    class StarFieldGroup : public vsg::Inherit<vsg::Group, StarFieldGroup>
+    class Component : public vsg::Inherit<vsg::Object, Component>
     {
     public:
-        explicit StarFieldGroup(const vsg::ref_ptr<vsg::Options>& options);
+        virtual void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice);
+        virtual void addDeviceFeatures(
+            const vsg::ref_ptr<vsg::PhysicalDevice> &physDevice,
+            const vsg::ref_ptr<vsg::DeviceFeatures> &deviceFeatures);
     };
 
-    class StarField : public vsg::Inherit<Component, StarField>
+    class Taal
     {
     public:
+        void addComponent(vsg::ref_ptr<Component> component);
+        void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice);
+        void init(const vsg::ref_ptr<vsg::Window>& window);
         void addDeviceFeatures(
             const vsg::ref_ptr<vsg::PhysicalDevice> &physDevice,
-            const vsg::ref_ptr<vsg::DeviceFeatures> &deviceFeatures) override;
-        vsg::ref_ptr<StarFieldGroup> createGroup(const vsg::ref_ptr<vsg::Options>& options);
+            const vsg::ref_ptr<vsg::DeviceFeatures> &deviceFeatures);
+        void addDeviceFeatures(const vsg::ref_ptr<vsg::Window>& window);
+        std::vector<vsg::ref_ptr<Component>> &getComponents()
+        {
+            return _components;
+        }
+      protected:
+        std::vector<vsg::ref_ptr<Component>> _components;
     };
 }

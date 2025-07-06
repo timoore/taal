@@ -1,4 +1,6 @@
+
 #include "taal/sky/StarField.h"
+#include "taal/util/Component.h"
 
 #include <vsg/all.h>
 
@@ -117,20 +119,12 @@ int main(int argc, char** argv)
         auto nearFarRatio = arguments.value<double>(0.001, "--nfr");
         if (arguments.read("--rgb")) options->mapRGBtoRGBAHint = false;
 
-        bool depthClamp = arguments.read({"--dc", "--depthClamp"});
+        taal::Taal taalComponent;
+        auto starField = taal::StarField::create();
+        taalComponent.addComponent(starField);
+
         // The physical device needs to be checked, of course
 
-        auto deviceFeatures = windowTraits->deviceFeatures = vsg::DeviceFeatures::create();
-        deviceFeatures->get().samplerAnisotropy = VK_TRUE;
-        if (depthClamp)
-        {
-            std::cout << "Enabled depth clamp." << std::endl;
-            deviceFeatures->get().depthClamp = VK_TRUE;
-        }
-
-        // For star field rendering
-        deviceFeatures->get().largePoints = VK_TRUE;
-        
         vsg::ref_ptr<vsg::ResourceHints> resourceHints;
         if (auto resourceHintsFilename = arguments.value<vsg::Path>("", "--rh"))
         {
@@ -200,7 +194,7 @@ int main(int argc, char** argv)
 
         auto modelGroup = vsg::Group::create();
 
-        auto starNode = taal::StarField::create(options);
+        auto starNode = starField->createGroup(options);
         modelGroup->addChild(starNode);
 
         vsg::Path path;
@@ -239,12 +233,8 @@ int main(int argc, char** argv)
         // create the viewer and assign window(s) to it
         auto viewer = vsg::Viewer::create();
         auto window = vsg::Window::create(windowTraits);
-        if (!window)
-        {
-            std::cout << "Could not create window." << std::endl;
-            return 1;
-        }
-
+        taalComponent.init(window);
+        taalComponent.addDeviceFeatures(window);
         viewer->addWindow(window);
 
         // compute the bounds of the scene graph to help position camera
