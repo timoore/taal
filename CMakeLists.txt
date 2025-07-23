@@ -32,5 +32,9 @@ endif()
 
 include(GNUInstallDirs)
 
+set(TAAL_DATA_DIR "${CMAKE_INSTALL_DATADIR}/taal")
+set(TAAL_FULL_DATA_DIR "${CMAKE_INSTALL_FULL_DATADIR}/taal")
+
+add_subdirectory(data)
 add_subdirectory(src/taal)
 add_subdirectory(src/examples)

@@ -25,7 +25,7 @@ target_sources(taal
 set(TAAL_PUBLIC_HEADERS
   shading/ComputeShaderSet.cpp
   shading/HDR.cpp
-  shading/shaderDefs.h  
+  shading/shaderDefs.h
   sky/StarCatalog.h
   sky/StarField.h
   util/Component.h
@@ -41,6 +41,10 @@ set_target_properties(
 
 target_link_libraries(taal PUBLIC vsg::vsg)
 target_include_directories(taal PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
+target_include_directories(taal PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
+
+configure_file("Config.h.in"
+  "${PROJECT_BINARY_DIR}/include/taal/Config.h")
 
 install(TARGETS taal
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

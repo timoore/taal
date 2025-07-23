@@ -48,7 +48,7 @@ namespace taal
     class Taal
     {
     public:
-        explicit Taal(vsg::ref_ptr<vsg::Options> options = {});
+        explicit Taal(vsg::ref_ptr<vsg::Options> options);
         void addComponent(vsg::ref_ptr<Component> component);
         void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice);
         void init(const vsg::ref_ptr<vsg::Window>& window);

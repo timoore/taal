@@ -119,7 +119,7 @@ int main(int argc, char** argv)
         auto nearFarRatio = arguments.value<double>(0.001, "--nfr");
         if (arguments.read("--rgb")) options->mapRGBtoRGBAHint = false;
 
-        taal::Taal taalComponent;
+        taal::Taal taalComponent(options);
         auto starField = taal::StarField::create();
         taalComponent.addComponent(starField);
 
@@ -194,9 +194,6 @@ int main(int argc, char** argv)
 
         auto modelGroup = vsg::Group::create();
 
-        auto starNode = starField->createGroup(options);
-        modelGroup->addChild(starNode);
-
         vsg::Path path;
 
         // read any vsg files
@@ -235,6 +232,8 @@ int main(int argc, char** argv)
         auto window = vsg::Window::create(windowTraits);
         taalComponent.init(window);
         taalComponent.addDeviceFeatures(window);
+        auto starNode = starField->createGroup(options);
+        modelGroup->addChild(starNode);
         viewer->addWindow(window);
 
         // compute the bounds of the scene graph to help position camera

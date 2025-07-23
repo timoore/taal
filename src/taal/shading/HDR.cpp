@@ -144,9 +144,10 @@ namespace taal
         _outputImage->sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         _outputImageView = vsg::createImageView(device, _outputImage,
                                                 VK_IMAGE_ASPECT_COLOR_BIT);
-    // Framebuffer
+        // Framebuffer
+#if 0
     auto fbuf = vsg::Framebuffer::create(renderPass, vsg::ImageViews{colorImageInfo.imageView, depthImageInfo.imageView}, extent.width, extent.height, 1);
-
+#endif
     }
     
 #if 0
@@ -289,7 +290,8 @@ namespace taal
     {
     }
 
-    void HDR::init(const vsg::ref_ptr<vsg::PhysicalDevice> &physDevice) {
+    void HDR::init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice,
+                   const vsg::ref_ptr<vsg::Options>&) {
         std::array hdrFormats = {VK_FORMAT_R16G16B16A16_SFLOAT, VK_FORMAT_R32G32B32A32_SFLOAT};
         std::array depthFormats = {VK_FORMAT_D32_SFLOAT};
         for (auto format : hdrFormats)

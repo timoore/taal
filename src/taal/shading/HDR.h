@@ -38,7 +38,8 @@ namespace taal
     {
     public:
         HDR(uint32_t sampleBits = VK_SAMPLE_COUNT_1_BIT);
-        void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice) override;
+        void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice,
+                  const vsg::ref_ptr<vsg::Options>& options) override;
         vsg::ref_ptr<vsg::RenderPass> createHdrRenderPass(vsg::ref_ptr<vsg::Device> device);
         void buildImages(const vsg::ref_ptr<vsg::Device>& device, const VkExtent2D& extent);
         uint32_t preferredSampleBits;

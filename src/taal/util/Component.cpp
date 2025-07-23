@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "Component.h"
 
+#include "taal/Config.h"
+
 #include <vsg/io/Logger.h>
 
 namespace taal
@@ -43,6 +45,7 @@ namespace taal
     {
         _options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
         _options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
+        _options->paths.push_back(TAAL_FULL_DATA_DIR);
     }
 
     void Taal::addComponent(vsg::ref_ptr<Component> component)
