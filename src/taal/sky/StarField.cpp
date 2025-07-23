@@ -112,7 +112,8 @@ namespace taal
         };
     }
 
-    StarFieldGroup::StarFieldGroup(const vsg::ref_ptr<vsg::Options>& options)
+    StarField::StarFieldGroup::StarFieldGroup(const vsg::ref_ptr<vsg::Options>&,
+                                   StarField* starfield)
     {
         auto starArray = vsg::vec4Array::create(StarCatalog::catalog.size());
         auto colorArray = vsg::vec3Array::create(StarCatalog::catalog.size());
@@ -135,8 +136,7 @@ namespace taal
             }
 #endif
         }
-        auto starShaderSet = makeShaderSet(options);
-        auto pipelineConf = vsg::GraphicsPipelineConfigurator::create(starShaderSet);
+        auto pipelineConf = vsg::GraphicsPipelineConfigurator::create(starfield->_starShaderSet);
         SetPipelineStates sps(VK_PRIMITIVE_TOPOLOGY_POINT_LIST, false, false, false);
         pipelineConf->accept(sps);
         vsg::DataList vertexArrays;
@@ -153,6 +153,12 @@ namespace taal
         addChild(stateGroup);
     }
 
+    void StarField::init(const vsg::ref_ptr<vsg::PhysicalDevice>&,
+                         const vsg::ref_ptr<vsg::Options>& options)
+    {
+        _starShaderSet = makeShaderSet(options);
+    }
+
     void StarField::addDeviceFeatures(
         const vsg::ref_ptr<vsg::PhysicalDevice> &physDevice,
         const vsg::ref_ptr<vsg::DeviceFeatures> &deviceFeatures)
@@ -164,8 +170,9 @@ namespace taal
         }
     }
 
-    vsg::ref_ptr<StarFieldGroup> StarField::createGroup(const vsg::ref_ptr<vsg::Options>& options)
+    vsg::ref_ptr<StarField::StarFieldGroup>
+    StarField::createGroup(const vsg::ref_ptr<vsg::Options>& options)
     {
-        return StarFieldGroup::create(options);
+        return StarFieldGroup::create(options, this);
     }
 }

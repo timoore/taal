@@ -26,29 +26,31 @@ SOFTWARE.
 
 #include <taal/util/Component.h>
 
-#include <vsg/io/FileSystem.h>
-#include <vsg/nodes/Group.h>
-#include <vsg/utils/ShaderSet.h>
+#include <vsg/app/RenderGraph.h>
+#include <vsg/vk/Device.h>
+#include <vulkan/vulkan_core.h>
+
+#include <cstdint>
 
 namespace taal
 {
-    class StarField : public vsg::Inherit<Component, StarField>
+    class HDR : public vsg::Inherit<Component, HDR>
     {
     public:
-        class StarFieldGroup : public vsg::Inherit<vsg::Group, StarFieldGroup>
-        {
-        public:
-            explicit StarFieldGroup(const vsg::ref_ptr<vsg::Options>& options,
-                                    StarField* starfield);
-        };
-        friend class StarFieldGroup;
-        void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice,
-                  const vsg::ref_ptr<vsg::Options>& options) override;
-        void addDeviceFeatures(
-            const vsg::ref_ptr<vsg::PhysicalDevice> &physDevice,
-            const vsg::ref_ptr<vsg::DeviceFeatures> &deviceFeatures) override;
-        vsg::ref_ptr<StarFieldGroup> createGroup(const vsg::ref_ptr<vsg::Options>& options);
-    protected:
-        vsg::ref_ptr<vsg::ShaderSet> _starShaderSet;
+        HDR(uint32_t sampleBits = VK_SAMPLE_COUNT_1_BIT);
+        void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice) override;
+        vsg::ref_ptr<vsg::RenderPass> createHdrRenderPass(vsg::ref_ptr<vsg::Device> device);
+        void buildImages(const vsg::ref_ptr<vsg::Device>& device, const VkExtent2D& extent);
+        uint32_t preferredSampleBits;
+        uint32_t actualSampleBits;
+        VkFormat imageFormat;
+        VkFormat depthFormat;
+
+        vsg::ref_ptr<vsg::Image> _colorImage;
+        vsg::ref_ptr<vsg::Image> _depthImage;
+        vsg::ref_ptr<vsg::Image> _outputImage;
+        vsg::ref_ptr<vsg::ImageView> _colorImageView;
+        vsg::ref_ptr<vsg::ImageView> _depthImageView;
+        vsg::ref_ptr<vsg::ImageView> _outputImageView;
     };
 }

@@ -26,14 +26,23 @@ SOFTWARE.
 
 #include <vsg/io/Logger.h>
 
-namespace taal {
-    void Component::init(const vsg::ref_ptr<vsg::PhysicalDevice> &)
+namespace taal
+{
+    void Component::init(const vsg::ref_ptr<vsg::PhysicalDevice>&,
+                         const vsg::ref_ptr<vsg::Options>&)
     {
     }
 
     void Component::addDeviceFeatures(const vsg::ref_ptr<vsg::PhysicalDevice> &,
                                       const vsg::ref_ptr<vsg::DeviceFeatures> &)
     {
+    }
+
+    Taal::Taal(vsg::ref_ptr<vsg::Options> options)
+        : _options(std::move(options))
+    {
+        _options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
+        _options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
     }
 
     void Taal::addComponent(vsg::ref_ptr<Component> component)
@@ -55,7 +64,7 @@ namespace taal {
     {
         for (auto &component : _components)
         {
-            component->init(physDevice);
+            component->init(physDevice, _options);
         }
     }
 

@@ -14,6 +14,8 @@ add_library(taal)
 
 target_sources(taal
   PRIVATE
+  shading/ComputeShaderSet.cpp
+  shading/HDR.cpp
   sky/StarCatalog.cpp
   sky/StarField.cpp
   util/Component.cpp
@@ -21,7 +23,9 @@ target_sources(taal
 )
 
 set(TAAL_PUBLIC_HEADERS
-  shading/shaderDefs.h
+  shading/ComputeShaderSet.cpp
+  shading/HDR.cpp
+  shading/shaderDefs.h  
   sky/StarCatalog.h
   sky/StarField.h
   util/Component.h

@@ -27,6 +27,7 @@ SOFTWARE.
 #include <vsg/app/Window.h>
 #include <vsg/core/Inherit.h>
 #include <vsg/core/Object.h>
+#include <vsg/io/Options.h>
 #include <vsg/vk/DeviceFeatures.h>
 #include <vsg/vk/PhysicalDevice.h>
 
@@ -37,7 +38,8 @@ namespace taal
     class Component : public vsg::Inherit<vsg::Object, Component>
     {
     public:
-        virtual void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice);
+        virtual void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice,
+                          const vsg::ref_ptr<vsg::Options>& options);
         virtual void addDeviceFeatures(
             const vsg::ref_ptr<vsg::PhysicalDevice> &physDevice,
             const vsg::ref_ptr<vsg::DeviceFeatures> &deviceFeatures);
@@ -46,6 +48,7 @@ namespace taal
     class Taal
     {
     public:
+        explicit Taal(vsg::ref_ptr<vsg::Options> options = {});
         void addComponent(vsg::ref_ptr<Component> component);
         void init(const vsg::ref_ptr<vsg::PhysicalDevice>& physDevice);
         void init(const vsg::ref_ptr<vsg::Window>& window);
@@ -59,5 +62,6 @@ namespace taal
         }
       protected:
         std::vector<vsg::ref_ptr<Component>> _components;
+        vsg::ref_ptr<vsg::Options> _options;
     };
 }
