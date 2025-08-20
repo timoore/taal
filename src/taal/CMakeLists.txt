@@ -20,6 +20,7 @@ target_sources(taal
   sky/StarField.cpp
   util/Component.cpp
   util/DeviceProperties.cpp
+  util/FrameGraph.cpp
 )
 
 set(TAAL_PUBLIC_HEADERS
@@ -30,6 +31,7 @@ set(TAAL_PUBLIC_HEADERS
   sky/StarField.h
   util/Component.h
   util/DeviceProperties.h
+  util/FrameGraph.h
   util/math.h
 )
 
